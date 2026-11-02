@@ -48,6 +48,7 @@ import { StatusBadge } from "@/components/shared/badges";
 import { EmptyState } from "@/components/shared/empty-state";
 import { WordFormDialog } from "./word-form-dialog";
 import { WordDetailSheet } from "./word-detail-sheet";
+import { Phonetic } from "@/components/shared/phonetic";
 import { AiBatchDialog } from "./ai-batch-dialog";
 
 type SortKey = "recent" | "alpha" | "status" | "review";
@@ -486,6 +487,7 @@ export function DictionaryView({ onOpenAdd }: { onOpenAdd: () => void }) {
                       <h3 className="vocab-word text-lg truncate group-hover:text-primary transition-colors">
                         {w.word}
                       </h3>
+                      <Phonetic value={w.phonetic} className="shrink" />
                       {w.isFavorite && (
                         <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400 shrink-0" />
                       )}

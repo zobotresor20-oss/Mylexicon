@@ -16,6 +16,7 @@ export interface GeneratedElement {
 export interface GeneratedEntry {
   word: string;
   translation: string;
+  phonetic: string;
   partOfSpeech: PartOfSpeech;
   register: Register | "";
   context: string;
@@ -118,7 +119,9 @@ export async function generateEntry(word: string): Promise<GeneratedEntry> {
       "Ajoutez d'abord votre code d'accès dans Réglages, section Assistant IA."
     );
   }
-  const res = await callApi({ word, code });
+  // La transcription phonétique suit l'accent choisi dans les Réglages.
+  const accent = useLexicon.getState().settings.accent;
+  const res = await callApi({ word, code, accent });
   if (!res.ok) throw await readError(res);
   const data = await res.json();
   return data.entry as GeneratedEntry;
@@ -130,6 +133,7 @@ export function saveGeneratedEntry(entry: GeneratedEntry): string {
   const wordId = s.addWord({
     word: entry.word,
     translation: entry.translation,
+    phonetic: entry.phonetic,
     partOfSpeech: entry.partOfSpeech,
     context: entry.context,
     register: entry.register,

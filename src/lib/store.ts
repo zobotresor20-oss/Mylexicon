@@ -20,6 +20,7 @@ import type {
   WordStatus,
 } from "./types";
 import { DAY_MS, reviewSm2 } from "./sm2";
+import { normalizePhonetic } from "./phonetic";
 
 // ----------------------------------------------------------------------------
 // Helpers
@@ -96,6 +97,7 @@ interface LexiconState {
 export interface NewWordInput {
   word: string;
   translation: string;
+  phonetic?: string;
   partOfSpeech: PartOfSpeech;
   context: string;
   register: Register | "";
@@ -159,6 +161,7 @@ export const useLexicon = create<LexiconState>()(
           id,
           word: input.word.trim(),
           translation: input.translation.trim(),
+          phonetic: normalizePhonetic(input.phonetic),
           partOfSpeech: input.partOfSpeech,
           context: input.context.trim(),
           register: input.register,

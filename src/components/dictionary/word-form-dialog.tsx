@@ -16,6 +16,7 @@ import type {
 import { useLexicon, type NewWordInput } from "@/lib/store";
 import { findFalseFriend } from "@/lib/false-friends";
 import { generateEntry, AiError } from "@/lib/ai";
+import { normalizePhonetic } from "@/lib/phonetic";
 import {
   Dialog,
   DialogContent,
@@ -102,6 +103,7 @@ export function WordFormDialog({
   // Champs du mot.
   const [word, setWord] = useState("");
   const [translation, setTranslation] = useState("");
+  const [phonetic, setPhonetic] = useState("");
   const [partOfSpeech, setPartOfSpeech] = useState<PartOfSpeech>("nom");
   const [register, setRegister] = useState<Register | "">("courant");
   const [context, setContext] = useState("");
@@ -121,6 +123,7 @@ export function WordFormDialog({
     if (editingWord) {
       setWord(editingWord.word);
       setTranslation(editingWord.translation);
+      setPhonetic(editingWord.phonetic ?? "");
       setPartOfSpeech(editingWord.partOfSpeech);
       setRegister(editingWord.register);
       setContext(editingWord.context);
@@ -151,6 +154,7 @@ export function WordFormDialog({
     } else {
       setWord(prefillWord ?? "");
       setTranslation("");
+      setPhonetic("");
       setPartOfSpeech("nom");
       setRegister("courant");
       setContext("");
@@ -180,6 +184,7 @@ export function WordFormDialog({
       const entry = await generateEntry(w);
       setWord(entry.word);
       setTranslation(entry.translation);
+      setPhonetic(entry.phonetic ?? "");
       setPartOfSpeech(entry.partOfSpeech);
       setRegister(entry.register);
       setContext(entry.context);
@@ -296,6 +301,7 @@ export function WordFormDialog({
     const input: NewWordInput = {
       word,
       translation,
+      phonetic: normalizePhonetic(phonetic),
       partOfSpeech,
       register: register || "",
       context,
@@ -459,6 +465,23 @@ export function WordFormDialog({
                 placeholder="ex : têtu, obstiné"
               />
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="wf-phonetic">Prononciation (phonétique)</Label>
+            <Input
+              id="wf-phonetic"
+              value={phonetic}
+              onChange={(e) => setPhonetic(e.target.value)}
+              placeholder="ex : ˈstʌbərn"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Alphabet phonétique international, sans les barres obliques. Remplie par
+              l'IA selon l'accent choisi dans les Réglages, et modifiable.
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

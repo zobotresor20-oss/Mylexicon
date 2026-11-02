@@ -32,6 +32,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Phonetic } from "@/components/shared/phonetic";
 import { cn } from "@/lib/utils";
 
 const MAX_WORDS = 20;
@@ -295,7 +296,10 @@ function ResultRow({
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="vocab-word text-lg truncate">{entry.word}</p>
+          <div className="flex items-baseline gap-2 min-w-0">
+            <p className="vocab-word text-lg truncate">{entry.word}</p>
+            <Phonetic value={entry.phonetic} />
+          </div>
           <p className="text-sm text-muted-foreground break-words">{entry.translation}</p>
           <div className="flex flex-wrap gap-1.5 mt-1.5">
             <Badge variant="outline" className="capitalize">

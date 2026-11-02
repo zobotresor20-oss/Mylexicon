@@ -340,6 +340,15 @@ export function SettingsView() {
               </SelectContent>
             </Select>
           </Row>
+          <Row label="Masquer la phonétique pendant l'étude">
+            <Switch
+              checked={!!settings.hidePhoneticInStudy}
+              onCheckedChange={(v) => updateSettings({ hidePhoneticInStudy: v })}
+            />
+          </Row>
+          <p className="text-xs text-muted-foreground px-1">
+            La transcription phonétique générée par l'IA suit l'accent choisi ci-dessus.
+          </p>
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <Label className="text-sm font-normal">Vitesse d'élocution</Label>

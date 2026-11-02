@@ -7,6 +7,7 @@ import { useLexicon } from "@/lib/store";
 import { isFalseFriend } from "@/lib/false-friends";
 import { SpeakButton } from "@/components/shared/speak-button";
 import { Badge } from "@/components/ui/badge";
+import { Phonetic } from "@/components/shared/phonetic";
 
 /**
  * Hero « Mot du jour » affiché en haut du hub Étudier.
@@ -70,6 +71,7 @@ export function WordOfDayHero({
               className="text-white hover:bg-white/15"
             />
           </div>
+          <Phonetic value={wordOfDay.phonetic} className="block text-white/80" />
           <p className="text-sm text-white/90 mt-0.5 truncate">
             {wordOfDay.translation}
           </p>

@@ -91,6 +91,8 @@ export interface Word {
   id: string;
   word: string; // anglais
   translation: string; // français (obligatoire)
+  /** Transcription phonétique (API), sans barres obliques. Facultative. */
+  phonetic?: string;
   partOfSpeech: PartOfSpeech;
   context: string; // situation / registre libre
   register: Register | "";
@@ -130,6 +132,8 @@ export interface Settings {
   accent: Accent;
   fontScale: number; // 0.85 -> 1.3
   speechRate: number; // 0.5 -> 1.3 (vitesse de prononciation)
+  /** Masquer la phonétique pendant l'étude (flashcards, rappel libre). */
+  hidePhoneticInStudy?: boolean;
   dailyNewWordsGoal: number;
   dailyReviewsGoal: number;
   reminderEnabled: boolean;

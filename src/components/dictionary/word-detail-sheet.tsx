@@ -33,6 +33,7 @@ import { findCognate } from "@/lib/cognates";
 import { SpeakButton } from "@/components/shared/speak-button";
 import { StatusBadge, ElementBadge, MasteryBar } from "@/components/shared/badges";
 import { WordFormDialog } from "./word-form-dialog";
+import { Phonetic } from "@/components/shared/phonetic";
 
 export function WordDetailSheet({
   word,
@@ -96,6 +97,7 @@ export function WordDetailSheet({
               <div className="space-y-1">
                 <SheetTitle className="flex items-center gap-2 text-2xl">
                   <span>{word.word}</span>
+                  <Phonetic value={word.phonetic} className="text-base font-normal" />
                   <SpeakButton text={word.word} />
                 </SheetTitle>
                 <SheetDescription className="text-base text-foreground">

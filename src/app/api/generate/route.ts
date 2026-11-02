@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash, timingSafeEqual } from "crypto";
 import { z } from "zod";
+import { normalizePhonetic } from "@/lib/phonetic";
 
 // Route serveur : la clé Gemini reste ici, jamais dans le navigateur.
 // Variables à définir dans Vercel :
@@ -71,6 +72,7 @@ Format exact de la réponse :
 {
   "word": "le mot ou l'expression, normalisé",
   "translation": "traduction française principale (plusieurs sens séparés par des virgules)",
+  "phonetic": "transcription phonétique du mot en alphabet phonétique international (API), sans barres obliques ni crochets, dans la variante demandée, avec l'accent tonique (exemple américain : ˈstʌbərn)",
   "partOfSpeech": "une valeur parmi : ${PARTS.join(", ")}",
   "register": "une valeur parmi : ${REGISTERS.join(", ")}",
   "context": "une phrase en français qui explique quand et comment on l'emploie",
@@ -94,6 +96,7 @@ const elementSchema = z.object({
 const entrySchema = z.object({
   word: z.string().min(1),
   translation: z.string().min(1),
+  phonetic: z.string().default(""),
   partOfSpeech: z.string().default("autre"),
   register: z.string().default("courant"),
   context: z.string().default(""),
@@ -146,6 +149,7 @@ async function callGemini(
   model: string,
   apiKey: string,
   word: string,
+  accent: "américain" | "britannique",
   lowThinking: boolean
 ): Promise<Response> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
@@ -166,7 +170,11 @@ async function callGemini(
       contents: [
         {
           role: "user",
-          parts: [{ text: `Mot ou expression à traiter : "${word}"` }],
+          parts: [
+            {
+              text: `Mot ou expression à traiter : "${word}"\nTranscription phonétique : anglais ${accent}.`,
+            },
+          ],
         },
       ],
       generationConfig,
@@ -185,7 +193,7 @@ async function errorDetail(res: Response): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
-  let body: { word?: unknown; code?: unknown; action?: unknown };
+  let body: { word?: unknown; code?: unknown; action?: unknown; accent?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -233,6 +241,8 @@ export async function POST(req: NextRequest) {
     return reply(400, "bad-request", "Saisissez d'abord un mot en anglais.");
   }
 
+  const accent = body.accent === "américain" ? "américain" : "britannique";
+
   // On essaie les modèles dans l'ordre jusqu'à obtenir une réponse.
   const tried: string[] = [];
   let upstream: Response | null = null;
@@ -246,9 +256,9 @@ export async function POST(req: NextRequest) {
     let res: Response;
     try {
       const isGemini3 = model.startsWith("gemini-3");
-      res = await callGemini(model, apiKey, word, isGemini3);
+      res = await callGemini(model, apiKey, word, accent, isGemini3);
       if (res.status === 400 && isGemini3) {
-        res = await callGemini(model, apiKey, word, false);
+        res = await callGemini(model, apiKey, word, accent, false);
       }
     } catch {
       lastStatus = 0;
@@ -352,6 +362,7 @@ export async function POST(req: NextRequest) {
     entry: {
       word: clean(e.word),
       translation: clean(e.translation),
+      phonetic: normalizePhonetic(e.phonetic),
       partOfSpeech,
       register,
       context: clean(e.context),

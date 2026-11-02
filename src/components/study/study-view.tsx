@@ -54,6 +54,7 @@ import { StudyCard } from "@/components/study/study-card";
 import { WordOfDayHero } from "@/components/study/word-of-day-hero";
 import { ActiveReadingView } from "@/components/study/active-reading-view";
 import { ProgressRing } from "@/components/shared/progress-ring";
+import { Phonetic } from "@/components/shared/phonetic";
 
 type Mode =
   | "home"
@@ -415,6 +416,7 @@ function FlashcardSession({
   const reviewCard = useLexicon((s) => s.reviewCard);
   const recordDailyActivity = useLexicon((s) => s.recordDailyActivity);
   const addStudySession = useLexicon((s) => s.addStudySession);
+  const hidePhonetic = useLexicon((s) => !!s.settings.hidePhoneticInStudy);
 
   const queue = useMemo<Card[]>(() => {
     let list: Card[];
@@ -562,6 +564,9 @@ function FlashcardSession({
                     fiche : {word.word} — {word.translation}
                   </p>
                 )}
+                {word && !hidePhonetic && (
+                  <Phonetic value={word.phonetic} className="mt-1" />
+                )}
                 {!frontEn && (
                   <div className="mt-3">
                     <SpeakButton text={card.content} size="sm" />
@@ -607,6 +612,7 @@ function FlashcardSession({
 
 function FreeRecallSession({ onExit }: { onExit: () => void }) {
   const { words, cards, examples } = useLexicon();
+  const hidePhonetic = useLexicon((s) => !!s.settings.hidePhoneticInStudy);
   const addExample = useLexicon((s) => s.addExample);
   const addStudySession = useLexicon((s) => s.addStudySession);
 
@@ -719,6 +725,7 @@ function FreeRecallSession({ onExit }: { onExit: () => void }) {
             Mot à rappeler
           </p>
           <p className="text-2xl font-bold mt-1">{word.word}</p>
+          {!hidePhonetic && <Phonetic value={word.phonetic} className="block" />}
           <p className="text-sm text-muted-foreground">{word.translation}</p>
           <div className="mt-2">
             <SpeakButton text={word.word} />
