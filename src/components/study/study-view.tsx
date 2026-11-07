@@ -20,6 +20,7 @@ import {
   Award,
   BookOpenText,
   Languages,
+  Dices,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -53,6 +54,7 @@ import { Confetti } from "@/components/shared/confetti";
 import { StudyCard } from "@/components/study/study-card";
 import { WordOfDayHero } from "@/components/study/word-of-day-hero";
 import { ActiveReadingView } from "@/components/study/active-reading-view";
+import { TopicSession } from "@/components/study/topic-session";
 import { ProgressRing } from "@/components/shared/progress-ring";
 import { Phonetic } from "@/components/shared/phonetic";
 
@@ -67,7 +69,8 @@ type Mode =
   | "false-friends-quiz"
   | "word-of-day"
   | "active-reading"
-  | "reverse-translation";
+  | "reverse-translation"
+  | "topic";
 
 export function StudyView() {
   const state = useLexicon();
@@ -316,6 +319,15 @@ export function StudyView() {
           onClick={() => setMode("mini-text")}
         />
 
+        {/* Sujet aléatoire */}
+        <StudyCard
+          icon={Dices}
+          title="Sujet aléatoire"
+          description="Parlez ou écrivez en utilisant vos propres mots"
+          accent="rose"
+          onClick={() => setMode("topic")}
+        />
+
         {/* Lecture active */}
         <StudyCard
           icon={BookOpenText}
@@ -392,6 +404,9 @@ function SessionHost({
   }
   if (mode === "reverse-translation") {
     return <ReverseTranslationSession onExit={onExit} />;
+  }
+  if (mode === "topic") {
+    return <TopicSession onExit={onExit} />;
   }
   return null;
 }

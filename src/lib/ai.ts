@@ -179,3 +179,59 @@ export function parseWordList(raw: string): string[] {
   }
   return out;
 }
+
+// ---------------------------------------------------------------------------
+// Mode « sujet aléatoire » : sujet généré à partir du vocabulaire, puis correction.
+// ---------------------------------------------------------------------------
+
+export interface TopicWordInput {
+  word: string;
+  translation: string;
+}
+
+export interface GeneratedTopic {
+  topicEn: string;
+  topicFr: string;
+  hintFr: string;
+}
+
+export interface ReviewResult {
+  feedback: string;
+  corrected: string;
+  correctedFr: string;
+  mistakes: { original: string; fixed: string; explanation: string }[];
+  words: { word: string; used: boolean; usedCorrectly: boolean; note: string }[];
+}
+
+function requireCode(): string {
+  const code = getAccessCode();
+  if (!code) {
+    throw new AiError(
+      "no-code",
+      "Ajoutez d'abord votre code d'accès dans Réglages, section Assistant IA."
+    );
+  }
+  return code;
+}
+
+/** Demande à l'IA un sujet d'expression libre qui fait employer ces mots. */
+export async function generateTopic(words: TopicWordInput[]): Promise<GeneratedTopic> {
+  const code = requireCode();
+  const res = await callApi({ action: "topic", code, words });
+  if (!res.ok) throw await readError(res);
+  const data = await res.json();
+  return data.topic as GeneratedTopic;
+}
+
+/** Demande à l'IA de corriger le texte produit et de juger l'emploi des mots. */
+export async function reviewText(input: {
+  text: string;
+  topicEn: string;
+  words: TopicWordInput[];
+}): Promise<ReviewResult> {
+  const code = requireCode();
+  const res = await callApi({ action: "review", code, ...input });
+  if (!res.ok) throw await readError(res);
+  const data = await res.json();
+  return data.review as ReviewResult;
+}
