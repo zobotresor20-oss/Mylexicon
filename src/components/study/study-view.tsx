@@ -21,6 +21,8 @@ import {
   BookOpenText,
   Languages,
   Dices,
+  Grid3x3,
+  Shuffle,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -55,6 +57,8 @@ import { StudyCard } from "@/components/study/study-card";
 import { WordOfDayHero } from "@/components/study/word-of-day-hero";
 import { ActiveReadingView } from "@/components/study/active-reading-view";
 import { TopicSession } from "@/components/study/topic-session";
+import { WordSearchSession } from "@/components/study/word-search-session";
+import { ScrambleSession } from "@/components/study/scramble-session";
 import { ProgressRing } from "@/components/shared/progress-ring";
 import { Phonetic } from "@/components/shared/phonetic";
 
@@ -70,7 +74,9 @@ type Mode =
   | "word-of-day"
   | "active-reading"
   | "reverse-translation"
-  | "topic";
+  | "topic"
+  | "word-search"
+  | "scramble";
 
 export function StudyView() {
   const state = useLexicon();
@@ -328,6 +334,24 @@ export function StudyView() {
           onClick={() => setMode("topic")}
         />
 
+        {/* Mots mêlés */}
+        <StudyCard
+          icon={Grid3x3}
+          title="Mots mêlés"
+          description="Retrouvez vos mots cachés dans une grille de lettres"
+          accent="teal"
+          onClick={() => setMode("word-search")}
+        />
+
+        {/* Mélange de lettres */}
+        <StudyCard
+          icon={Shuffle}
+          title="Mélange de lettres"
+          description="Remettez dans l'ordre les lettres d'un mot"
+          accent="amber"
+          onClick={() => setMode("scramble")}
+        />
+
         {/* Lecture active */}
         <StudyCard
           icon={BookOpenText}
@@ -407,6 +431,12 @@ function SessionHost({
   }
   if (mode === "topic") {
     return <TopicSession onExit={onExit} />;
+  }
+  if (mode === "word-search") {
+    return <WordSearchSession onExit={onExit} />;
+  }
+  if (mode === "scramble") {
+    return <ScrambleSession onExit={onExit} />;
   }
   return null;
 }
